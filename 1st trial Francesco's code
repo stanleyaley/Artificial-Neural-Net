@@ -1,0 +1,106 @@
+clc, clear all, close all
+
+n_point=100;
+
+% Define class 1
+mean_a1 = -8; 
+mean_a2 =  8;
+std_a1  = 2;
+std_a2 = 2;
+
+% Implement class 1
+xa1 = mean_a1+std_a1*randn(1,n_point);
+xa2 = mean_a2+std_a2*randn(1,n_point);
+XA(:,:) =[xa1;xa2];
+ta = ones(1,n_point); % label of class one = 1
+
+% Define class 2
+mean_b1 = 2; 
+mean_b2 =  2;
+std_b1  = 2;
+std_b2 = 2;
+
+% Impleent class 2
+xb1=mean_b1+std_b1*randn(1,n_point);
+xb2=mean_b2+std_b2*randn(1,n_point);
+
+XB(:,:) =[xb1;xb2];
+tb = zeros(1,n_point);
+%%
+na=size(XA,2);
+nb=size(XB,2);
+
+ntot=na+nb;
+
+t_tot=[ta,tb];
+
+shuf=randperm(ntot);
+XAB=[XA,XB];
+
+X_temp= XAB(:,shuf);
+
+t_tot=t_tot(shuf);
+%%
+X=[X_temp;ones(1,ntot)];
+
+W_old=[1 -1 0];
+
+mu=0.0002;
+
+
+axis_x=min(xa1)-2:0.1:max(xb2);
+
+y=-(W_old(1)*axis_x-W_old(3))/W_old(2); % non completely sure
+
+    figure()
+    plot(axis_x,y);
+    hold on
+    plot(xa1,xa2,'bx')
+    hold on
+    plot(xb1,xb2, 'r+')
+    grid on
+    
+
+
+%%
+axis_x=min(xa1)-2:0.1:max(xb2);
+
+for i = 1:50
+   delta_W = -mu.*(W_old*X-t_tot)*X'; 
+   
+   delta_W
+   % probable problem
+   
+   % W_old*X this result should be tresholded
+   
+   W_new = W_old + delta_W; 
+   
+   W_old = W_new ;
+   
+   % if all the point are labeled correctly stop!
+   if sum((W_old*X-t_tot))==0
+       break
+   end
+   
+    y=-(W_old(1)*axis_x+W_old(3))/W_old(2); % non completely sure
+   
+    figure()
+    plot(axis_x,y);
+    hold on
+    plot(xa1,xa2,'bx')
+    hold on
+    plot(xb1,xb2, 'r+')
+    
+pause(1)
+end
+
+
+
+
+
+
+
+
+
+
+
